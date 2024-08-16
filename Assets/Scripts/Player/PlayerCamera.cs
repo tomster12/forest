@@ -2,8 +2,10 @@ using UnityEngine;
 
 public class PlayerCamera : MonoBehaviour
 {
+    public Transform CameraTransform => cameraTransform;
+
     [Header("References")]
-    [SerializeField] private PlayerController playerController = null;
+    [SerializeField] private PlayerMovement playerMovement = null;
     [SerializeField] private Transform cameraCentreTransform = null;
     [SerializeField] private Transform cameraTransform = null;
 
@@ -15,7 +17,8 @@ public class PlayerCamera : MonoBehaviour
     [SerializeField] private float zoomMin = 0.5f;
     [SerializeField] private float zoomMax = 2;
     [SerializeField] private float swayEaseScale = 0.5f;
-    [SerializeField] private float swayAmount = 5;
+    [SerializeField] private float mouseSwayAmount = 5;
+    [SerializeField] private float playerSwayAmount = 0.5f;
     [SerializeField] private float swayLerp = 10;
     [SerializeField] private float swayDeadzone = 0.05f;
 
@@ -26,7 +29,7 @@ public class PlayerCamera : MonoBehaviour
     private void Start()
     {
         // Set camera position to player position
-        cameraCentreTransform.position = playerController.transform.position + followOffset;
+        cameraCentreTransform.position = playerMovement.transform.position + followOffset;
         initialCameraRot = cameraTransform.rotation;
         initialOffset = cameraTransform.localPosition;
     }
@@ -39,23 +42,32 @@ public class PlayerCamera : MonoBehaviour
         zoomAmount = Mathf.Clamp(zoomAmount, zoomMin, zoomMax);
         cameraTransform.localPosition = Vector3.Lerp(cameraTransform.localPosition, initialOffset * zoomAmount, zoomLerpSpeed * Time.deltaTime);
 
-        // Calculate current mouse offset from centre
-        Vector2 mouseOffset = Vector2.zero;
-        mouseOffset.x = Mathf.Clamp01(Input.mousePosition.x / Screen.width) - 0.5f;
-        mouseOffset.y = Mathf.Clamp01(Input.mousePosition.y / Screen.height) - 0.5f;
+        float xSway = 0;
+        float ySway = 0;
 
-        // Calculate deadzoned and scaled sway for mouse
-        float xRot = 0;
-        float yRot = 0;
-        if (Mathf.Abs(mouseOffset.y) > swayDeadzone)
-            xRot = -Easing.EaseOutQuad(swayEaseScale * (Mathf.Abs(mouseOffset.y) - swayDeadzone)) * Mathf.Sign(mouseOffset.y) * swayAmount;
-        if (Mathf.Abs(mouseOffset.x) > swayDeadzone)
-            yRot = Easing.EaseOutQuad(swayEaseScale * (Mathf.Abs(mouseOffset.x) - swayDeadzone)) * Mathf.Sign(mouseOffset.x) * swayAmount;
+        // Calculate current mouse deadzoned offset from centre
+        float yOffset = Mathf.Clamp01(Input.mousePosition.y / Screen.height) - 0.5f;
+        if (Mathf.Abs(yOffset) > swayDeadzone)
+            xSway = -Easing.EaseOutQuad(swayEaseScale * (Mathf.Abs(yOffset) - swayDeadzone)) * Mathf.Sign(yOffset) * mouseSwayAmount;
+        float xOffset = Mathf.Clamp01(Input.mousePosition.x / Screen.width) - 0.5f;
+        if (Mathf.Abs(xOffset) > swayDeadzone)
+            ySway = Easing.EaseOutQuad(swayEaseScale * (Mathf.Abs(xOffset) - swayDeadzone)) * Mathf.Sign(xOffset) * mouseSwayAmount;
+
+        // Sway rotation in direction player is moving
+        if (playerMovement.IsMoving)
+        {
+            Vector3 swayDir = Vector3.zero;
+            swayDir += playerMovement.InputDir.z * cameraTransform.forward;
+            swayDir += playerMovement.InputDir.x * cameraTransform.right;
+            Vector3 swayDirLocal = cameraTransform.InverseTransformDirection(swayDir);
+            xSway = -swayDirLocal.z * playerSwayAmount;
+            ySway = swayDirLocal.x * playerSwayAmount;
+        }
 
         // Lerp camera rotation towards sway rotation
-        if (xRot != 0 || yRot != 0)
+        if (xSway != 0 || ySway != 0)
         {
-            Quaternion swayRotation = Quaternion.Euler(xRot, yRot, 0);
+            Quaternion swayRotation = Quaternion.Euler(xSway, ySway, 0);
             cameraTransform.rotation = Quaternion.Lerp(cameraTransform.rotation, initialCameraRot * swayRotation, swayLerp * Time.deltaTime);
         }
 
@@ -66,6 +78,6 @@ public class PlayerCamera : MonoBehaviour
     private void FixedUpdate()
     {
         // Lerp camera position towards player position
-        cameraCentreTransform.position = Vector3.Lerp(cameraCentreTransform.position, playerController.transform.position + followOffset, followLerpSpeed * Time.fixedDeltaTime);
+        cameraCentreTransform.position = Vector3.Lerp(cameraCentreTransform.position, playerMovement.transform.position + followOffset, followLerpSpeed * Time.fixedDeltaTime);
     }
 }

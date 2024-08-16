@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 2670622615952637253}
   - component: {fileID: 7686997576802939839}
   m_Layer: 0
-  m_Name: Mesh
+  m_Name: Player Mesh
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -116,6 +116,9 @@ GameObject:
   - component: {fileID: 3119098724471235423}
   - component: {fileID: 6125636368213544503}
   - component: {fileID: 8304528368417513796}
+  - component: {fileID: 3652512602490752969}
+  - component: {fileID: 2561179434060561380}
+  - component: {fileID: 4658157354983646731}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -175,9 +178,65 @@ MonoBehaviour:
   m_GameObject: {fileID: 305934956694222803}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 798405a4f2b5b6b47b324886e291530e, type: 3}
+  m_Script: {fileID: 11500000, guid: a317b63830dae0e409d1186927838184, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   movementSpeed: 5
   sprintMultiplier: 1.2
   rotationSpeed: 450
+--- !u!114 &3652512602490752969
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 305934956694222803}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4d404881916a9b94aa5a985ac7858d5f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playerMovement: {fileID: 8304528368417513796}
+  cameraCentreTransform: {fileID: 0}
+  cameraTransform: {fileID: 0}
+  followOffset: {x: 0, y: 1, z: 0}
+  followLerpSpeed: 8
+  zoomLerpSpeed: 16
+  zoomStrength: 0.06
+  zoomMin: 0.5
+  zoomMax: 2
+  swayEaseScale: 0.5
+  mouseSwayAmount: 5
+  playerSwayAmount: 0.5
+  swayLerp: 10
+  swayDeadzone: 0.05
+--- !u!114 &2561179434060561380
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 305934956694222803}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 475bfe711e2119341aa3dcf67bcfd397, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &4658157354983646731
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 305934956694222803}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9d065e6dfc293344ea173d8d88501568, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  heldItemContainer: {fileID: 0}
+  playerBody: {fileID: 4760893956883711303}
+  playerInventory: {fileID: 2561179434060561380}
+  droppedItemPrefab: {fileID: 8220313988028750808, guid: 02de6c382d06ce548bc90d14325e2033,
+    type: 3}
+  pickupRadius: 1

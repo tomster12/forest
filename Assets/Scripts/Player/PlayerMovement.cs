@@ -1,10 +1,13 @@
 using UnityEngine;
 
-public class PlayerController : MonoBehaviour
+public class PlayerMovement : MonoBehaviour
 {
     public Vector3 InputDir { get; private set; } = Vector3.zero;
     public bool IsMoving => InputDir != Vector3.zero;
     public bool IsSprinting => Input.GetKey(KeyCode.LeftShift);
+
+    [Header("References")]
+    [SerializeField] private PlayerCamera playerCamera = null;
 
     [Header("Config")]
     [SerializeField] private float movementSpeed = 5f;
@@ -15,8 +18,11 @@ public class PlayerController : MonoBehaviour
     {
         // Receive input from the player
         Vector3 inputDir = Vector3.zero;
-        inputDir.x = Input.GetAxisRaw("Horizontal");
-        inputDir.z = Input.GetAxisRaw("Vertical");
+
+        // Cast camera transform onto flat plane
+        Vector3 forwardDir = Vector3.ProjectOnPlane(playerCamera.CameraTransform.forward, Vector3.up).normalized;
+        inputDir += Input.GetAxisRaw("Horizontal") * playerCamera.CameraTransform.right;
+        inputDir += Input.GetAxisRaw("Vertical") * forwardDir;
         InputDir = inputDir.normalized;
     }
 
