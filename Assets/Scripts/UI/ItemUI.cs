@@ -3,15 +3,15 @@ using UnityEngine.UI;
 
 public class ItemUI : MonoBehaviour
 {
-    public Item Item => item;
+    public ItemInstance Item => item;
 
     [Header("References")]
     [SerializeField] private RectTransform rectTransform;
-    [SerializeField] private Item item;
+    [SerializeField] private ItemInstance item;
     [SerializeField] private TMPro.TextMeshProUGUI amountText;
     [SerializeField] private Image iconImage;
 
-    public void SetItem(Item item, int x, int y)
+    public void SetItem(ItemInstance item, int x, int y)
     {
         ChangeItem(item);
 
@@ -19,7 +19,7 @@ public class ItemUI : MonoBehaviour
         rectTransform.localPosition = InventoryUI.GetGridPosToWorldPos(x, y);
     }
 
-    public void ChangeItem(Item newItem)
+    public void ChangeItem(ItemInstance newItem)
     {
         // Change subscription to new item
         if (item != null) item.OnAmountChanged -= OnAmountChanged;

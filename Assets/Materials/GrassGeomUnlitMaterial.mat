@@ -64,12 +64,12 @@ Material:
     - _MinimunGrassBlades: 15
     - _NoiseScale: 0.06
     - _PositionRandomness: 0.03
-    - _WindScale: 0.031
+    - _WindScale: 0.06
     - _WindSpeed: 0.05
     - _WindStrength: 0.1
     m_Colors:
-    - _BaseColor: {r: 0.4490922, g: 0.5471698, b: 0.38972944, a: 1}
+    - _BaseColor: {r: 0.41992232, g: 0.589, b: 0.40935498, a: 1}
     - _Color: {r: 0.6889879, g: 1, b: 0.5990566, a: 1}
     - _SecondaryColor: {r: 0.3584906, g: 0.31800187, b: 0.3026878, a: 1}
-    - _WindColor: {r: 0.5849056, g: 0.5123322, b: 0.251068, a: 1}
+    - _WindColor: {r: 0.71599996, g: 0.5975612, b: 0.42673597, a: 1}
   m_BuildTextureStacks: []

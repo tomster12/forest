@@ -1,19 +1,18 @@
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class DroppedItem : MonoBehaviour
 {
     public static List<DroppedItem> AllItems = new List<DroppedItem>();
 
-    public Item item { get; private set; }
-    public bool CanPickup => !IsPickedUp && item != null;
+    public ItemInstance Item { get; private set; }
+    public bool CanPickup => !IsPickedUp && Item != null;
     public bool TriedPickupRecently { get; private set; }
     public bool IsPickedUp { get; private set; }
 
-    public void Set(Item item)
+    public void Set(ItemInstance item)
     {
-        this.item = item;
+        this.Item = item;
         SetColor(unblockedColor);
         UpdatePrompt();
     }
@@ -53,6 +52,7 @@ public class DroppedItem : MonoBehaviour
     [SerializeField] private Color blockedColor;
     [ColorUsage(true, true)]
     [SerializeField] private Color unblockedColor;
+    [SerializeField] private float promptDistance = 0.5f;
 
     [Header("References")]
     [SerializeField] private GameObject prompt;
@@ -94,7 +94,7 @@ public class DroppedItem : MonoBehaviour
 
     private void LateUpdate()
     {
-        prompt.transform.position = transform.position + Vector3.up * 1f;
+        prompt.transform.position = transform.position + Vector3.up * promptDistance;
         prompt.transform.rotation = Quaternion.identity;
     }
 

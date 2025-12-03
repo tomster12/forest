@@ -1,7 +1,9 @@
 using UnityEngine;
 
-public class PlayerStash : MonoBehaviour
+public partial class PlayerStash : MonoBehaviour, ISaveable
 {
+    public static PlayerStash Instance { get; private set; }
+
     public void SetEnabled(bool enabled)
     {
         inventoryUIRect.gameObject.SetActive(enabled);
@@ -18,9 +20,13 @@ public class PlayerStash : MonoBehaviour
 
     private void Awake()
     {
-        // Create stash inventory
+        if (Instance != null) throw new System.Exception("PlayerStash already exists in the scene!");
+        Instance = this;
         inventory = new Inventory(3, 3);
+    }
 
+    private void Start()
+    {
         // Create an inventory UI for the main inventory
         GameObject inventoryUIGO = Instantiate(inventoryUIPrefab, canvasParent);
         InventoryUI inventoryUI = inventoryUIGO.GetComponent<InventoryUI>();
@@ -29,4 +35,15 @@ public class PlayerStash : MonoBehaviour
         inventoryUIRect.anchoredPosition = new Vector2(100, -500);
         SetEnabled(false);
     }
+}
+
+// --- Serialization ---
+
+public partial class PlayerStash : MonoBehaviour, ISaveable
+{
+    public string SaveKey => "PlayerStash";
+
+    public string SaveToString() => JsonUtility.ToJson(inventory);
+
+    public void LoadFromString(string data) => inventory.LoadFromData(JsonUtility.FromJson<InventoryData>(data));
 }

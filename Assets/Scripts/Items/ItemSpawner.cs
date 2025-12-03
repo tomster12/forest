@@ -35,6 +35,6 @@ public class ItemSpawner : MonoBehaviour
         // Pick a random item and stack size
         ItemData itemData = items[Random.Range(0, items.Count)];
         int stackSize = Random.Range(1, itemData.MaxStackSize + 1);
-        droppedItem.Set(new Item(itemData, stackSize));
+        droppedItem.Set(new ItemInstance(itemData.ID, stackSize));
     }
 }

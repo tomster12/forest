@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using UnityEngine;
-using static UnityEditor.Progress;
 
 public class PlayerInteractor : MonoBehaviour
 {
@@ -21,11 +20,12 @@ public class PlayerInteractor : MonoBehaviour
     private Interactable currentInteractable;
     private List<InventoryUI> hoveredInventoryUIs;
     private List<ItemUI> hoveredItemUIs;
-    private InventoryUI hoveredInventoryUI => hoveredInventoryUIs.Count > 0 ? hoveredInventoryUIs[hoveredInventoryUIs.Count - 1] : null;
-    private ItemUI hoveredItemUI => hoveredItemUIs.Count > 0 ? hoveredItemUIs[hoveredItemUIs.Count - 1] : null;
     private ItemUI heldItemUI;
     private Vector2 heldItemUIOffset;
     private Vector2Int heldItemUIGridOffset;
+
+    private InventoryUI HoveredInventoryUI => hoveredInventoryUIs.Count > 0 ? hoveredInventoryUIs[hoveredInventoryUIs.Count - 1] : null;
+    private ItemUI HoveredItemUI => hoveredItemUIs.Count > 0 ? hoveredItemUIs[hoveredItemUIs.Count - 1] : null;
 
     private void Start()
     {
@@ -66,7 +66,7 @@ public class PlayerInteractor : MonoBehaviour
             // Hovering some other inventory so try place inside
             if (hoveredInventoryUIs.Count > 0)
             {
-                InventoryUI inventoryUI = hoveredInventoryUI;
+                InventoryUI inventoryUI = HoveredInventoryUI;
                 var slot = inventoryUI.ScreenToInventory(Input.mousePosition);
                 var response = inventoryUI.Inventory.TryPlaceItem(heldItemUI.Item, slot.x - heldItemUIGridOffset.x, -slot.y - heldItemUIGridOffset.y);
 
@@ -74,9 +74,9 @@ public class PlayerInteractor : MonoBehaviour
                 if (response.Item1 == Inventory.ItemPlaceResponse.Replaced)
                 {
                     // If mouse is over the swapped item then find offset
-                    if (hoveredItemUIs.Count > 0 && hoveredItemUI.Item == response.Item2)
+                    if (hoveredItemUIs.Count > 0 && HoveredItemUI.Item == response.Item2)
                     {
-                        RectTransformUtility.ScreenPointToLocalPointInRectangle(hoveredItemUI.transform as RectTransform, Input.mousePosition, null, out Vector2 hoveredLocalPoint);
+                        RectTransformUtility.ScreenPointToLocalPointInRectangle(HoveredItemUI.transform as RectTransform, Input.mousePosition, null, out Vector2 hoveredLocalPoint);
                         heldItemUIOffset = hoveredLocalPoint;
                         heldItemUIGridOffset = InventoryUI.GetWorldPosToGridPos(hoveredLocalPoint);
                     }
@@ -120,17 +120,17 @@ public class PlayerInteractor : MonoBehaviour
             isMousePressed = false;
 
             // Get top hovered item
-            if (hoveredItemUI.Item.Inventory.TryRemoveItem(hoveredItemUI.Item))
+            if (HoveredItemUI.Item.Inventory.TryRemoveItem(HoveredItemUI.Item))
             {
                 // Find offset from mouse to item
-                RectTransformUtility.ScreenPointToLocalPointInRectangle(hoveredItemUI.transform as RectTransform, Input.mousePosition, null, out Vector2 hoveredLocalPoint);
+                RectTransformUtility.ScreenPointToLocalPointInRectangle(HoveredItemUI.transform as RectTransform, Input.mousePosition, null, out Vector2 hoveredLocalPoint);
                 heldItemUIOffset = hoveredLocalPoint;
                 heldItemUIGridOffset = InventoryUI.GetWorldPosToGridPos(hoveredLocalPoint);
 
                 // Update held item to new item
                 heldItemUI.gameObject.SetActive(true);
                 UpdateHeldItemPosition();
-                heldItemUI.ChangeItem(hoveredItemUI.Item);
+                heldItemUI.ChangeItem(HoveredItemUI.Item);
             }
         }
     }
@@ -147,23 +147,23 @@ public class PlayerInteractor : MonoBehaviour
         foreach (var droppedItem in DroppedItem.AllItems)
         {
             if (!droppedItem.CanPickup) continue;
+
             bool isNearby = Vector3.Distance(playerBody.position, droppedItem.transform.position) < pickupRadius;
             droppedItem.SetNearby(isNearby);
-            if (isNearby)
-            {
-                // Only pickup if not blocked recently, or otherwise pressing E
-                if (droppedItem.TriedPickupRecently && !Input.GetKeyDown(KeyCode.E)) continue;
+            if (!isNearby) continue;
 
-                // Try quick stack item in inventory
-                var response = playerInventory.MainInventory.TryQuickStackItem(droppedItem.item);
-                droppedItem.SetBlockedRecently();
+            // Only pickup if not blocked recently, or otherwise pressing E
+            if (droppedItem.TriedPickupRecently && !Input.GetKeyDown(KeyCode.E)) continue;
 
-                // If was successful then set picked up
-                bool hasPickedUp = false;
-                hasPickedUp |= response == Inventory.ItemPlaceResponse.Placed;
-                hasPickedUp |= response == Inventory.ItemPlaceResponse.Stacked && droppedItem.item.Amount == 0;
-                if (hasPickedUp) droppedItem.SetPickedUp(playerBody);
-            }
+            // Try quick stack item in inventory
+            var response = playerInventory.inventory.TryQuickStackItem(droppedItem.Item);
+            droppedItem.SetBlockedRecently();
+
+            // If was successful then set picked up
+            bool hasPickedUp = false;
+            hasPickedUp |= response == Inventory.ItemPlaceResponse.Placed;
+            hasPickedUp |= response == Inventory.ItemPlaceResponse.Stacked && droppedItem.Item.Amount == 0;
+            if (hasPickedUp) droppedItem.SetPickedUp(playerBody);
         }
     }
 

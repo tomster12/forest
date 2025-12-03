@@ -1,8 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.UI;
-using static Inventory;
 
 public class InventoryUI : MonoBehaviour
 {
@@ -56,7 +54,7 @@ public class InventoryUI : MonoBehaviour
         Inventory.OnItemRemoved += OnItemRemoved;
 
         // Rescale main panel to fit the inventory size
-        mainPanel.sizeDelta = GetGridSizeToWorldSize(Inventory.SizeX, Inventory.SizeY);
+        mainPanel.sizeDelta = GetGridSizeToWorldSize(Inventory.SizeX, Inventory.SizeX);
     }
 
     public Vector2Int ScreenToInventory(Vector2 screenPosition)
@@ -73,9 +71,9 @@ public class InventoryUI : MonoBehaviour
     [Header("Prefabs")]
     [SerializeField] private GameObject itemUIPrefab;
 
-    private Dictionary<Item, ItemUI> itemUIs = new Dictionary<Item, ItemUI>();
+    private Dictionary<ItemInstance, ItemUI> itemUIs = new Dictionary<ItemInstance, ItemUI>();
 
-    private void OnItemAdded(Item item, int x, int y)
+    private void OnItemAdded(ItemInstance item, int x, int y)
     {
         // Create new inventory item UI and
         GameObject itemUIGO = Instantiate(itemUIPrefab, itemHolder);
@@ -84,7 +82,7 @@ public class InventoryUI : MonoBehaviour
         itemUIs.Add(item, itemUI);
     }
 
-    private void OnItemRemoved(Item item)
+    private void OnItemRemoved(ItemInstance item)
     {
         // Remove inventory item UI
         ItemUI itemUI = itemUIs[item];

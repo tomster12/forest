@@ -14,6 +14,6 @@ public class Interactable : MonoBehaviour
     [Header("Config")]
     [SerializeField] private Outline outline;
     [SerializeField] private Color closedHighlightColour = Color.white;
-    [SerializeField] private Color openHighlightColour = new Color(0.8f, 0.8f, 0.8f);
-    [SerializeField] private UnityEvent<bool> onToggle = new UnityEvent<bool>();
+    [SerializeField] private Color openHighlightColour = new(0.8f, 0.8f, 0.8f);
+    [SerializeField] private UnityEvent<bool> onToggle = new();
 }
